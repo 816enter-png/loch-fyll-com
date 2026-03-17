@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── FONTS ──────────────────────────────────── */
+@font-face {
+  font-family: 'Bondrians';
+  src: url('/fonts/Bondrians.ttf') format('truetype'),
+       url('/fonts/Bondrians.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --black:    #0a0906;
+  --charcoal: #141210;
+  --grey-900: #1c1916;
+  --grey-700: #2e2a25;
+  --grey-400: #7a7168;
+  --grey-200: #c4bdb4;
+  --cream:    #ede8df;
+  --white:    #f8f4ef;
+  --copper:   #b8832a;
+  --copper-lt:#d4a44c;
+  --copper-dk:#8a5e18;
+
+  --font-brand: 'Bondrians', serif;
+  --font-body:  'Inter', sans-serif;
+}
+
+/* ─── RESET ──────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--black);
+  color: var(--cream);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--copper-dk); border-radius: 4px; }
+
+/* ─── TYPOGRAPHY ─────────────────────────────── */
+h1,h2,h3,h4 {
+  font-family: var(--font-brand);
+  font-weight: normal;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* ─── GRAIN OVERLAY (removed — was degrading video quality) ── */
+
+/* ─── UTILITY ────────────────────────────────── */
+img { max-width: 100%; display: block; }
+
+.brand { font-family: var(--font-brand); }
+.copper { color: var(--copper); }
+.copper-lt { color: var(--copper-lt); }
+
+/* ─── COPPER LINE DIVIDER ────────────────────── */
+.copper-line {
+  display: block;
+  width: 60px;
+  height: 1px;
+  background: var(--copper);
+  margin: 0 auto;
+}
+
+/* ─── NAV ────────────────────────────────────── */
+.nav-link {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--grey-200);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.nav-link:hover { color: var(--copper-lt); }
+
+/* ─── BUTTONS ────────────────────────────────── */
+.btn-copper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--copper-lt);
+  border: 1px solid var(--copper-dk);
+  padding: 14px 32px;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.35s ease;
+}
+.btn-copper:hover {
+  background: var(--copper);
+  color: var(--black);
+  border-color: var(--copper);
+}
+.btn-copper svg { transition: transform 0.3s ease; }
+.btn-copper:hover svg { transform: translateX(4px); }
+
+/* ─── SECTION LABEL ──────────────────────────── */
+.section-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--copper);
+}
+
+/* ─── HORIZONTAL RULE ────────────────────────── */
+.rule {
+  border: none;
+  border-top: 1px solid rgba(184,131,42,0.25);
+}
+
+/* ─── FADE IN ANIMATION ──────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 1.2s cubic-bezier(0.16,1,0.3,1) both; }
+.delay-1 { animation-delay: 0.15s; }
+.delay-2 { animation-delay: 0.30s; }
+.delay-3 { animation-delay: 0.55s; }
+.delay-4 { animation-delay: 0.80s; }
+
+/* ─── COUNT-UP TICKER ────────────────────────── */
+.stat-number {
+  font-family: var(--font-brand);
+  font-size: clamp(48px, 7vw, 96px);
+  color: var(--cream);
+  line-height: 1;
+}
+.stat-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--grey-400);
+  margin-top: 8px;
+}
