@@ -12,10 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Large binary assets
-public/frames
-public/assets
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
