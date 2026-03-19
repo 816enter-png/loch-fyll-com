@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
+const BATCH_SIZE = 12;
+const MAX_RETRIES = 3;
+
 /**
- * Preloads a JPEG frame sequence and exposes a draw(progress) function
+ * Preloads a frame sequence in batches and exposes a draw(progress) function
  * that paints the correct frame onto a <canvas>.
- *
- * @param {React.RefObject<HTMLCanvasElement>} canvasRef
- * @param {{ path: string, prefix: string, total: number }} opts
- * @returns {{ ready: boolean, loaded: number, total: number, draw: (progress: number) => void }}
  */
 export default function useFrameSequence(canvasRef, {
   path = '/frames',
@@ -18,51 +17,79 @@ export default function useFrameSequence(canvasRef, {
   const [loaded, setLoaded] = useState(0);
   const [ready, setReady] = useState(false);
   const lastIndexRef = useRef(-1);
+  const firstDrawnRef = useRef(false);
 
-  /** Build the URL for a 1-indexed frame number. */
   const frameUrl = useCallback(
     (i) => `${path}/${prefix}-${String(i).padStart(4, '0')}.${ext}`,
     [path, prefix, ext]
   );
 
-  // ── Preload all frames ──────────────────────────────────────────
+  // ── Load a single frame with retry ──────────────────────────────
+  const loadFrame = useCallback((url, retries = 0) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = url;
+      img.onload = () => resolve(img);
+      img.onerror = () => {
+        if (retries < MAX_RETRIES) {
+          setTimeout(() => resolve(loadFrame(url, retries + 1)), 200 * (retries + 1));
+        } else {
+          resolve(null);
+        }
+      };
+    });
+  }, []);
+
+  // ── Preload frames in batches ───────────────────────────────────
   useEffect(() => {
     let cancelled = false;
     const imgs = new Array(total);
-    let count = 0;
+    let completedCount = 0;
 
-    const onComplete = () => {
-      if (cancelled) return;
-      count++;
-      setLoaded(count);
-      if (count === total) {
+    async function preload() {
+      for (let batchStart = 0; batchStart < total; batchStart += BATCH_SIZE) {
+        if (cancelled) return;
+
+        const batchEnd = Math.min(batchStart + BATCH_SIZE, total);
+        const batch = [];
+
+        for (let i = batchStart; i < batchEnd; i++) {
+          batch.push(
+            loadFrame(frameUrl(i + 1)).then((img) => {
+              if (cancelled) return;
+              if (img) imgs[i] = img;
+              completedCount++;
+              setLoaded(completedCount);
+
+              // Draw frame 1 immediately for perceived instant start
+              if (i === 0 && img && !firstDrawnRef.current) {
+                firstDrawnRef.current = true;
+                const canvas = canvasRef.current;
+                if (canvas) {
+                  const ctx = canvas.getContext('2d');
+                  if (ctx) {
+                    canvas.width = img.naturalWidth;
+                    canvas.height = img.naturalHeight;
+                    ctx.drawImage(img, 0, 0);
+                  }
+                }
+              }
+            })
+          );
+        }
+
+        await Promise.all(batch);
+      }
+
+      if (!cancelled) {
         images.current = imgs;
         setReady(true);
       }
-    };
-
-    for (let i = 0; i < total; i++) {
-      const img = new Image();
-      img.src = frameUrl(i + 1); // 1-indexed filenames
-      img.onload = () => { imgs[i] = img; onComplete(); };
-      img.onerror = onComplete; // count it so we don't hang
     }
 
-    // Draw frame 1 as soon as it loads (perceived instant start)
-    const first = new Image();
-    first.src = frameUrl(1);
-    first.onload = () => {
-      if (cancelled) return;
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      canvas.width = first.naturalWidth;
-      canvas.height = first.naturalHeight;
-      ctx.drawImage(first, 0, 0);
-    };
-
+    preload();
     return () => { cancelled = true; };
-  }, [canvasRef, frameUrl, total]);
+  }, [canvasRef, frameUrl, total, loadFrame]);
 
   // ── Draw the frame for a given scroll progress (0–1) ───────────
   const draw = useCallback((progress) => {
@@ -75,7 +102,6 @@ export default function useFrameSequence(canvasRef, {
       Math.max(0, Math.round(progress * (total - 1)))
     );
 
-    // Skip redundant draws — same frame is already on screen
     if (index === lastIndexRef.current) return;
     lastIndexRef.current = index;
 
@@ -83,6 +109,7 @@ export default function useFrameSequence(canvasRef, {
     if (!img) return;
 
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
     if (canvas.width !== img.naturalWidth) canvas.width = img.naturalWidth;
     if (canvas.height !== img.naturalHeight) canvas.height = img.naturalHeight;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
