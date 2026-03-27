@@ -46,6 +46,13 @@ const StorySection = ({ onNavigate404 }) => {
   const capCanvasRef  = useRef(null);
   const videoSectionRef = useRef(null);
   const videoCanvasRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const { draw: drawCap } = useFrameSequence(capCanvasRef, {
     path: '/frames/cap', prefix: 'cap', total: 192, ext: 'webp',
@@ -105,7 +112,7 @@ const StorySection = ({ onNavigate404 }) => {
         {/* ── INTRO BAND ──────────────────────────────────────────── */}
         <section
           id="our-story"
-          style={{ padding: 'var(--space-2xl) 48px var(--space-xl)', position: 'relative' }}
+          style={{ padding: `var(--space-2xl) ${isMobile ? '24px' : '48px'} var(--space-xl)`, position: 'relative' }}
         >
           <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
@@ -165,8 +172,8 @@ const StorySection = ({ onNavigate404 }) => {
             {/* Two-column body */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '80px',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: isMobile ? '32px' : '80px',
               maxWidth: '1000px',
               margin: '0 auto',
             }}>
@@ -205,7 +212,7 @@ const StorySection = ({ onNavigate404 }) => {
           ref={capSectionRef}
           id="heritage"
           style={{
-            padding: 'var(--space-2xl) 48px var(--space-xl)',
+            padding: `var(--space-2xl) ${isMobile ? '24px' : '48px'} var(--space-xl)`,
             position: 'relative', overflow: 'hidden',
           }}
         >
@@ -219,11 +226,12 @@ const StorySection = ({ onNavigate404 }) => {
 
           {/* Cap animation — left */}
           <Reveal style={{
-            position: 'absolute',
-            bottom: 0, left: '-10%',
-            width: '70%',
-            display: 'flex', justifyContent: 'flex-start',
+            position: isMobile ? 'relative' : 'absolute',
+            bottom: 0, left: isMobile ? '0' : '-10%',
+            width: isMobile ? '100%' : '70%',
+            display: 'flex', justifyContent: isMobile ? 'center' : 'flex-start',
             zIndex: 1,
+            ...(isMobile && { marginBottom: '24px' }),
           }}>
             <canvas
               ref={capCanvasRef}
@@ -237,11 +245,11 @@ const StorySection = ({ onNavigate404 }) => {
 
           <div style={{
             maxWidth: '1200px', margin: '0 auto',
-            display: 'grid', gridTemplateColumns: '1fr 1fr',
-            gap: '80px', alignItems: 'center',
+            display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+            gap: isMobile ? '0' : '80px', alignItems: 'center',
             position: 'relative', zIndex: 2,
           }}>
-            <div /> {/* Spacer for canvas */}
+            {!isMobile && <div />} {/* Spacer for canvas — desktop only */}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
               <Reveal>
@@ -277,9 +285,10 @@ const StorySection = ({ onNavigate404 }) => {
               {/* Stats */}
               <Reveal delay={0.20}>
                 <div style={{
-                  display: 'flex', gap: '56px', marginTop: '16px',
+                  display: 'flex', gap: isMobile ? '24px' : '56px', marginTop: '16px',
                   borderTop: '1px solid rgba(184,131,42,0.1)',
                   paddingTop: '32px',
+                  flexWrap: 'wrap',
                 }}>
                   {[
                     { num: '5,000', label: 'Years of heritage' },
@@ -353,7 +362,7 @@ const StorySection = ({ onNavigate404 }) => {
         id="the-whisky"
         style={{
           background: 'var(--black)',
-          padding: 'var(--space-2xl) 48px',
+          padding: `var(--space-2xl) ${isMobile ? '24px' : '48px'}`,
           position: 'relative', overflow: 'hidden',
         }}
       >
@@ -368,8 +377,8 @@ const StorySection = ({ onNavigate404 }) => {
 
         <div style={{
           maxWidth: '1200px', margin: '0 auto',
-          display: 'grid', gridTemplateColumns: '1fr 1fr',
-          gap: '100px', alignItems: 'center',
+          display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+          gap: isMobile ? '48px' : '100px', alignItems: 'center',
         }}>
           {/* Copy */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
@@ -475,7 +484,7 @@ const StorySection = ({ onNavigate404 }) => {
           ══════════════════════════════════════════════════════════ */}
       <section style={{
         background: 'var(--charcoal)',
-        padding: 'var(--space-xl) 48px',
+        padding: `var(--space-xl) ${isMobile ? '24px' : '48px'}`,
         position: 'relative',
         borderTop: '1px solid rgba(184,131,42,0.06)',
         borderBottom: '1px solid rgba(184,131,42,0.06)',
@@ -511,13 +520,15 @@ const StorySection = ({ onNavigate404 }) => {
         id="contact"
         style={{
           background: 'var(--black)',
-          padding: '100px 48px 48px',
+          padding: `80px ${isMobile ? '24px' : '48px'} 48px`,
         }}
       >
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{
-            display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr',
-            gap: '64px', paddingBottom: '80px',
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '1.5fr 1fr 1fr',
+            gap: isMobile ? '40px' : '64px',
+            paddingBottom: isMobile ? '48px' : '80px',
           }}>
             {/* Brand */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
