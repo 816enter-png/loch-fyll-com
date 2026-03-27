@@ -104,11 +104,11 @@ img { max-width: 100%; display: block; }
 /* ─── LABEL / EYEBROW ───────────────────────── */
 .section-label {
   font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: var(--copper);
+  color: var(--copper-lt);
 }
 
 /* ─── NAV ────────────────────────────────────── */
@@ -193,10 +193,11 @@ img { max-width: 100%; display: block; }
 }
 .stat-label {
   font-family: var(--font-body);
-  font-size: 9px;
+  font-size: 13px;
+  font-weight: 600;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--grey-500);
+  color: var(--copper-lt);
   margin-top: 10px;
 }
 

@@ -427,10 +427,10 @@ const StorySection = ({ onNavigate404 }) => {
                   <div key={label} style={{ display: 'flex', gap: '20px', alignItems: 'baseline' }}>
                     <span style={{
                       fontFamily: 'var(--font-body)',
-                      fontSize: '9px', fontWeight: 500,
+                      fontSize: '13px', fontWeight: 600,
                       letterSpacing: '0.25em', textTransform: 'uppercase',
-                      color: 'var(--copper)',
-                      minWidth: '56px',
+                      color: 'var(--copper-lt)',
+                      minWidth: '70px',
                     }}>{label}</span>
                     <span style={{
                       fontFamily: 'var(--font-display)',
